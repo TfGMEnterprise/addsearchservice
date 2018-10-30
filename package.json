@@ -1,0 +1,27 @@
+{
+  "name": "addsearch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TfGMEnterprise/addsearch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TfGMEnterprise/addsearch/issues"
+  },
+  "homepage": "https://github.com/TfGMEnterprise/addsearch#readme",
+  "dependencies": {
+    "nconf": "^0.10.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
