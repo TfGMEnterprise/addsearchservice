@@ -1,5 +1,5 @@
 # AddSearchService
-This is a JS library written to access the AddSearch search API
+This is a JS library written to access the AddSearch [Search API](https://www.addsearch.com/support/api-reference/)
 
 ## Installation
 
