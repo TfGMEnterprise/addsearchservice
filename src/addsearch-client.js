@@ -1,18 +1,9 @@
+const { serialize } = require("./utils/serialize");
 const httpClient = require('./utils/http-client');
 const config = require('./config/config')
 
 let publicKey = null;
 const baseUrl = config.get('addsearch:baseUrl');
-
-const serialize = (obj) => {
-    var str = [];
-    for (var p in obj)
-        if (obj.hasOwnProperty(p)) {
-            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-    return str.join("&");
-};
-
 
 /**
  * @typedef {Object} SearchResult - A single AddSearch result
@@ -42,7 +33,7 @@ function search(term, limit = 50, page = 1, fuzzy = false) {
     const plusSpaces = cleanTerm.replace(' ', '+');
 
     const params = {
-        term: term,
+        term: plusSpaces,
         limit: limit,
         page: page,
         fuzzy: fuzzy
