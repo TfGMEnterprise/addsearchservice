@@ -8,8 +8,7 @@ const request = (uri, auth, method = 'GET', data, headers) => {
         json: true
     };
 
-    if(data)
-    {
+    if(data) {
         options.form = data;
     }
 
@@ -18,7 +17,6 @@ const request = (uri, auth, method = 'GET', data, headers) => {
     }
 
     if(auth) {
-
         if(!auth.user)
         {
             return Promise.reject(new Error('auth object must contain `user` and `pass` properties'));

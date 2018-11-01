@@ -1,21 +1,44 @@
 const httpClient = require('./utils/http-client');
-const config = require('./config')
+const config = require('./config/config')
 
-const publicKey = config.get('addsearch:siteKey');
-const privateKey = config.get('addsearch:privateKey');
+let publicKey = null;
 const baseUrl = config.get('addsearch:baseUrl');
 
 const serialize = (obj) => {
     var str = [];
     for (var p in obj)
-      if (obj.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-      }
+        if (obj.hasOwnProperty(p)) {
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
     return str.join("&");
 };
 
-const search = (term, limit = 50, page = 1, fuzzy = false) => {
-    const cleanTerm = term.replace(/[\W_]+/g," ");
+
+/**
+ * @typedef {Object} SearchResult - A single AddSearch result
+ * @property {string} id - The search result identifier
+ * @property {string} url - the URL of the result
+ * @property {string} title - the title of the result
+ * * @property {string} meta_description - meta description from the result page
+ * * @property {Array<Object>} meta_categories - meta categories from the result page
+ * * @property {Array<Object>} custom_fields - custom fields for the result as defined with AddSearch
+ * * @property {string} highlight - an excerpt of the result page
+ * * @property {Date} ts - the date the page was last indexed
+ * * @property {Array<Object>} categories - The AddSearch categories for this result page.
+ * * @property {Object} images - An object containing images from the result page.
+ * * @property {number} score - A score representing relevence to the search term.
+  */
+
+// Parameters may be declared in a variety of syntactic forms
+/**
+ * @param {string}  term - The keyword(s) to be used for the search
+ * @param {number} limit - The number of results to show (1-50)
+ * @param {string} page - The page of results to show
+ * @param {string} fuzzy - Enable fuzzy search
+ * @return {Array<SearchResult>} On object containing search() and addToIndex() functions
+ */
+function search(term, limit = 50, page = 1, fuzzy = false) {
+    const cleanTerm = term.replace(/[\W_]+/g, " ");
     const plusSpaces = cleanTerm.replace(' ', '+');
 
     const params = {
@@ -26,23 +49,21 @@ const search = (term, limit = 50, page = 1, fuzzy = false) => {
     }
 
     const searchUri = `${baseUrl}/search/${publicKey}?${serialize(params)}`;
-    
+
     return httpClient.get(searchUri);
 }
 
-const addToIndex = (url) => {
-    const params = {
-        action: 'FETCH',
-        indexPublicKey: publicKey,
-        url: url
-    };
+// Parameters may be declared in a variety of syntactic forms
+/**
+ * @param {string}  publicApiKey - The AddSearch publicAPIKey
+ * @return {Object} On object containing the search() function
+ */
+function init(publicApiKey) {
+    publicKey = publicApiKey;
 
-    const crawlerUrl = `${baseUrl}/crawler`;
-
-    return httpClient.post(crawlerUrl, { user: publicKey, pass:privateKey }, params);
-}
-
-module.exports = {
-    search: search,
-    addToIndex: addToIndex
+    return {
+        search: search
+    }
 };
+
+module.exports = init;
