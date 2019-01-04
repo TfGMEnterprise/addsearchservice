@@ -20,13 +20,12 @@ const baseUrl = config.get('addsearch:baseUrl');
  * * @property {number} score - A score representing relevence to the search term.
   */
 
-// Parameters may be declared in a variety of syntactic forms
 /**
  * @param {string}  term - The keyword(s) to be used for the search
  * @param {number} limit - The number of results to show (1-50)
  * @param {string} page - The page of results to show
  * @param {string} fuzzy - Enable fuzzy search
- * @return {Array<SearchResult>} On object containing search() and addToIndex() functions
+ * @return {Array<SearchResult>} The search result
  */
 function search(term, limit = 50, page = 1, fuzzy = false) {
     const cleanTerm = term.replace(/[\W_]+/g, " ");
