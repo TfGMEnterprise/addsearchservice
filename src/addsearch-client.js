@@ -28,6 +28,9 @@ const baseUrl = config.get('addsearch:baseUrl');
  * @return {Array<SearchResult>} The search result
  */
 function search(term, limit = 50, page = 1, fuzzy = false) {
+    if(term === null || term === undefined || term === '') {
+        return Promise.resolve([]);
+    }
     const cleanTerm = term.replace(/[\W_]+/g, " ");
     const plusSpaces = cleanTerm.replace(' ', '+');
 
