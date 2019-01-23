@@ -20,6 +20,10 @@ nconf.env({
 nconf.defaults({
     addsearch: {
         baseUrl: 'https://api.addsearch.com/v1'
+    },
+    redis: {
+        host: 'localhost',
+        port: null
     }
 });
 

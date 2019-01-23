@@ -1,8 +1,17 @@
 const { serialize } = require("./utils/serialize");
 const httpClient = require('./utils/http-client');
 const config = require('./config/config')
+const redisClient = require('./utils/redis-client');
 
 let publicKey = null;
+let _redisAddress = null;
+let _redisPort = null;
+let _redisEnabled = false;
+
+const generateCacheKey = (term) => {
+    return `addsearch-term-[${term}]`;
+};  
+
 const baseUrl = config.get('addsearch:baseUrl');
 
 /**
@@ -28,22 +37,32 @@ const baseUrl = config.get('addsearch:baseUrl');
  * @return {Array<SearchResult>} The search result
  */
 function search(term, limit = 50, page = 1, fuzzy = false) {
-    if(term === null || term === undefined || term === '') {
+
+    if (term === null || term === undefined || term === '') {
         return Promise.resolve([]);
     }
-    const cleanTerm = term.replace(/[\W_]+/g, " ");
-    const plusSpaces = cleanTerm.replace(' ', '+');
 
-    const params = {
-        term: plusSpaces,
-        limit: limit,
-        page: page,
-        fuzzy: fuzzy
+    const doSearch = () => {
+
+        const cleanTerm = term.replace(/[\W_]+/g, " ");
+        const plusSpaces = cleanTerm.replace(' ', '+');
+
+        const params = {
+            term: plusSpaces,
+            limit: limit,
+            page: page,
+            fuzzy: fuzzy
+        }
+        const searchUri = `${baseUrl}/search/${publicKey}?${serialize(params)}`;
+
+        return httpClient.get(searchUri);
+    };
+    
+    if(_redisEnabled) {
+        return redisClient.getset(generateCacheKey(term), doSearch);
     }
 
-    const searchUri = `${baseUrl}/search/${publicKey}?${serialize(params)}`;
-
-    return httpClient.get(searchUri);
+    return doSearch();
 }
 
 // Parameters may be declared in a variety of syntactic forms
@@ -51,12 +70,17 @@ function search(term, limit = 50, page = 1, fuzzy = false) {
  * @param {string}  publicApiKey - The AddSearch publicAPIKey
  * @return {Object} On object containing the search() function
  */
-function init(publicApiKey) {
+function init(publicApiKey, enableRedisCache = false) {
     publicKey = publicApiKey;
+    if(enableRedisCache) {
+        _redisEnabled = true;
+        _redisAddress = config.get('redis:host');
+        _redisPort = config.get('redis:port');
+    }
 
     return {
         search: search
-    }
+    };
 };
 
 module.exports = init;
