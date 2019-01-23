@@ -20,3 +20,12 @@ addSearchClient.search('foo').then((results) => {
 });
 
 ```
+## Redis Cache
+
+In order to take advantage of the redis cache locally. You must install and run redis.
+
+install redis:
+```brew install redis```
+
+Configure redis to start on computer startup:
+```ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents```
