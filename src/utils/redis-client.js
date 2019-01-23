@@ -47,15 +47,18 @@ const set = (key, value, expirySeconds = oneHourInSeconds) => {
     });
 };
 
+const tryStringify = (obj) => {
+    try {
+        return JSON.stringify(obj);
+    } catch(ex) { }
+    return obj;
+};
+
 const getset = (key, valuePromise) => {
     return get(key).then((value) => {
         if (value == null) {
-            try {
-                value = JSON.stringify(value);
-            } catch(ex) { }
-            
             return valuePromise().then(async (value) => {
-                await set(key, value);
+                await set(key, tryStringify(value));
                 return value;
             });
         }
