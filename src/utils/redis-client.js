@@ -50,12 +50,19 @@ const set = (key, value, expirySeconds = oneHourInSeconds) => {
 const getset = (key, valuePromise) => {
     get(key).then((value) => {
         if(value == null) {
+            try {
+                value = JSON.stringify(value);
+            } catch {}
             return valuePromise().then(async (value) => {
-                await set(key, JSON.stringify(value));
+                await set(key, value);
                 return value;
             });
         }
-        return JSON.parse(value);
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
     })
 };
 
