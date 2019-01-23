@@ -50,7 +50,10 @@ const set = (key, value, expirySeconds = oneHourInSeconds) => {
 const tryStringify = (obj) => {
     try {
         return JSON.stringify(obj);
-    } catch(ex) { }
+    } catch(ex) {
+        console.warn('Unable to strigify object');
+        console.error(ex);
+    }
     return obj;
 };
 
