@@ -51,11 +51,11 @@ const getset = (key, valuePromise) => {
     get(key).then((value) => {
         if(value == null) {
             return valuePromise().then(async (value) => {
-                await set(key, value);
+                await set(key, JSON.stringify(value));
                 return value;
             });
         }
-        return value;
+        return JSON.parse(value);
     })
 };
 
